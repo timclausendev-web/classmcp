@@ -60,3 +60,11 @@ test-site/
 
 # Editor workspace files
 *.code-workspace
+
+# Internal marketing/tracking (not for public repo)
+REDDIT_POSTS.csv
+reddit-posts/
+reddit-performance/
+ARGUMENTS.md
+WEBSITE-UPDATE-PROMPT.md
+scripts/generate-reddit-report.cjs
