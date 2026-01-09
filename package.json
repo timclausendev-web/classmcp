@@ -1,0 +1,39 @@
+{
+  "name": "classmcp",
+  "version": "2.0.0",
+  "description": "Multi-framework MCP server for AI-optimized CSS class generation with SSR safety - supports Tailwind, Bootstrap, UnoCSS, Tachyons",
+  "main": "dist/index.js",
+  "bin": {
+    "classmcp": "./dist/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "tailwind",
+    "bootstrap",
+    "unocss",
+    "tachyons",
+    "css",
+    "ai",
+    "claude",
+    "ssr",
+    "hydration",
+    "classpresso",
+    "utility-css"
+  ],
+  "author": "Tim Carter Clausen <tim.clausen.dev@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  }
+}
