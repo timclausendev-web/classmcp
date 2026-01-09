@@ -64,8 +64,4 @@ test-site/
 # Internal marketing/tracking (not for public repo)
 .claude/
 docs/
-reddit-posts/
-reddit-performance/
-ARGUMENTS.md
-WEBSITE-UPDATE-PROMPT.md
 scripts/generate-reddit-report.cjs
