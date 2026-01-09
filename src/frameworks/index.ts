@@ -8,6 +8,7 @@ import { tailwindConfig, tailwindPatterns } from './tailwind.js';
 import { bootstrapConfig, bootstrapPatterns } from './bootstrap.js';
 import { unocssConfig, unocssPatterns } from './unocss.js';
 import { tachyonsConfig, tachyonsPatterns } from './tachyons.js';
+import type { CustomComponentPattern } from '../config/transform.js';
 
 // ============================================
 // FRAMEWORK REGISTRY
@@ -26,6 +27,51 @@ export const frameworks: Record<FrameworkId, FrameworkModule> = {
   unocss: { config: unocssConfig, patterns: unocssPatterns },
   tachyons: { config: tachyonsConfig, patterns: tachyonsPatterns }
 };
+
+// ============================================
+// CUSTOM PATTERNS STORAGE
+// ============================================
+
+/** Storage for user-defined custom patterns */
+let customPatterns: CustomComponentPattern[] = [];
+
+/** Whether custom patterns should override built-ins with same ID */
+let overrideBuiltins: boolean = false;
+
+/**
+ * Set custom patterns from user config
+ */
+export function setCustomPatterns(patterns: CustomComponentPattern[], override: boolean = false): void {
+  customPatterns = patterns;
+  overrideBuiltins = override;
+}
+
+/**
+ * Get all custom patterns (unfiltered)
+ */
+export function getCustomPatterns(): CustomComponentPattern[] {
+  return customPatterns;
+}
+
+/**
+ * Get custom patterns filtered for a specific framework
+ */
+export function getCustomPatternsForFramework(frameworkId: FrameworkId): CustomComponentPattern[] {
+  return customPatterns.filter(p => {
+    if (!p._frameworks || p._frameworks.length === 0) {
+      return true; // No framework restriction = applies to all
+    }
+    return p._frameworks.includes(frameworkId);
+  });
+}
+
+/**
+ * Clear all custom patterns
+ */
+export function clearCustomPatterns(): void {
+  customPatterns = [];
+  overrideBuiltins = false;
+}
 
 // ============================================
 // FRAMEWORK DETECTION
@@ -60,52 +106,77 @@ export async function detectFramework(projectPath: string): Promise<FrameworkId>
 // ============================================
 
 /**
- * Get all patterns for a framework
+ * Get all patterns for a framework (built-in + custom)
  */
 export function getPatterns(frameworkId: FrameworkId): ComponentPattern[] {
-  return frameworks[frameworkId]?.patterns || [];
+  const builtIn = frameworks[frameworkId]?.patterns || [];
+  const custom = getCustomPatternsForFramework(frameworkId);
+
+  if (overrideBuiltins) {
+    // Custom patterns override built-ins with same ID
+    const customIds = new Set(custom.map(p => p.id));
+    const filteredBuiltIn = builtIn.filter(p => !customIds.has(p.id));
+    return [...filteredBuiltIn, ...custom];
+  }
+
+  // Custom patterns extend built-ins (no override)
+  return [...builtIn, ...custom];
 }
 
 /**
- * Get a pattern by ID
+ * Get a pattern by ID (checks custom first if overrideBuiltins, else built-in first)
  */
 export function getPattern(
   frameworkId: FrameworkId,
   patternId: string
 ): ComponentPattern | undefined {
-  return frameworks[frameworkId]?.patterns.find(p => p.id === patternId);
+  const builtIn = frameworks[frameworkId]?.patterns.find(p => p.id === patternId);
+  const custom = getCustomPatternsForFramework(frameworkId).find(p => p.id === patternId);
+
+  if (overrideBuiltins) {
+    return custom ?? builtIn; // Custom wins
+  }
+  return builtIn ?? custom; // Built-in wins, custom extends
 }
 
 /**
- * Get patterns by category
+ * Check if a pattern is custom (user-defined)
+ */
+export function isCustomPattern(pattern: ComponentPattern): boolean {
+  return '_isCustom' in pattern && (pattern as CustomComponentPattern)._isCustom === true;
+}
+
+/**
+ * Get patterns by category (built-in + custom)
  */
 export function getPatternsByCategory(
   frameworkId: FrameworkId,
   category: string
 ): ComponentPattern[] {
-  return frameworks[frameworkId]?.patterns.filter(p => p.category === category) || [];
+  return getPatterns(frameworkId).filter(p => p.category === category);
 }
 
 /**
- * Search patterns by query
+ * Search patterns by query (built-in + custom)
  */
 export function searchPatterns(
   frameworkId: FrameworkId,
   query: string
 ): ComponentPattern[] {
   const q = query.toLowerCase();
-  return frameworks[frameworkId]?.patterns.filter(p =>
+  return getPatterns(frameworkId).filter(p =>
     p.name.toLowerCase().includes(q) ||
     p.description.toLowerCase().includes(q) ||
-    p.category.toLowerCase().includes(q)
-  ) || [];
+    p.category.toLowerCase().includes(q) ||
+    p.id.toLowerCase().includes(q)
+  );
 }
 
 /**
- * Get all categories for a framework
+ * Get all categories for a framework (built-in + custom)
  */
 export function getCategories(frameworkId: FrameworkId): string[] {
-  const patterns = frameworks[frameworkId]?.patterns || [];
+  const patterns = getPatterns(frameworkId);
   return [...new Set(patterns.map(p => p.category))];
 }
 
@@ -178,7 +249,7 @@ export function getClientOnlyClasses(pattern: ComponentPattern): string | undefi
 // ============================================
 
 /**
- * Generate CSS for patterns
+ * Generate CSS for patterns (built-in + custom)
  */
 export function generateCSS(
   frameworkId: FrameworkId,
@@ -195,13 +266,14 @@ export function generateCSS(
     throw new Error(`Unknown framework: ${frameworkId}`);
   }
 
-  let patterns = framework.patterns;
+  // Use getPatterns() to include custom patterns
+  let patterns = getPatterns(frameworkId);
   if (categories?.length) {
     patterns = patterns.filter(p => categories.includes(p.category));
   }
 
   let css = `/* Generated by classmcp - ${framework.config.displayName} */\n`;
-  css += `/* https://classmcp.com */\n\n`;
+  css += `/* https://github.com/anthropics/classmcp */\n\n`;
 
   // Group by category
   const grouped = new Map<string, ComponentPattern[]>();
@@ -214,7 +286,8 @@ export function generateCSS(
 
   for (const [category, pats] of grouped) {
     if (!minified) {
-      css += `/* ${category.toUpperCase()} */\n`;
+      const isCustomCategory = category === 'custom' || pats.some(p => isCustomPattern(p));
+      css += `/* ${category.toUpperCase()}${isCustomCategory ? ' (includes custom)' : ''} */\n`;
     }
 
     for (const p of pats) {
@@ -259,21 +332,27 @@ export function listFrameworks(): { id: FrameworkId; name: string; description: 
 }
 
 /**
- * Get framework statistics
+ * Get framework statistics (includes custom patterns)
  */
 export function getFrameworkStats(frameworkId: FrameworkId): {
   totalPatterns: number;
+  builtInPatterns: number;
+  customPatterns: number;
   categories: number;
   ssrSafePatterns: number;
   clientOnlyPatterns: number;
 } {
-  const patterns = frameworks[frameworkId]?.patterns || [];
+  const allPatterns = getPatterns(frameworkId);
+  const builtIn = frameworks[frameworkId]?.patterns || [];
+  const custom = getCustomPatternsForFramework(frameworkId);
 
   return {
-    totalPatterns: patterns.length,
-    categories: new Set(patterns.map(p => p.category)).size,
-    ssrSafePatterns: patterns.filter(p => isSSRSafe(p)).length,
-    clientOnlyPatterns: patterns.filter(p => !isSSRSafe(p)).length
+    totalPatterns: allPatterns.length,
+    builtInPatterns: builtIn.length,
+    customPatterns: custom.length,
+    categories: new Set(allPatterns.map(p => p.category)).size,
+    ssrSafePatterns: allPatterns.filter(p => isSSRSafe(p)).length,
+    clientOnlyPatterns: allPatterns.filter(p => !isSSRSafe(p)).length
   };
 }
 

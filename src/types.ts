@@ -320,3 +320,63 @@ export const CATEGORIES = [
 ] as const;
 
 export type CategoryId = typeof CATEGORIES[number]['id'];
+
+// ============================================
+// CUSTOM PATTERNS (User-defined)
+// ============================================
+
+/**
+ * Simplified state variant for user config files
+ * Users don't need all the advanced states
+ */
+export interface CustomStateVariant {
+  base: string;
+  hover?: string;
+  focus?: string;
+  active?: string;
+  disabled?: string;
+}
+
+/**
+ * Simplified pattern input for user config files
+ * Converts to full ComponentPattern internally
+ */
+export interface CustomPatternInput {
+  /** Unique identifier (e.g., "brand-btn", "pricing-card") */
+  id: string;
+
+  /** CSS classes - string or state-aware object */
+  classes: string | CustomStateVariant;
+
+  /** Category for organization (defaults to "custom") */
+  category?: string;
+
+  /** Human-readable name (defaults to id) */
+  name?: string;
+
+  /** Description of when to use this pattern */
+  description?: string;
+
+  /** SSR safety info */
+  ssr?: {
+    safe: boolean;
+    warning?: string;
+  };
+
+  /** Limit to specific framework(s) - if omitted, applies to all */
+  frameworks?: ('tailwind' | 'bootstrap' | 'unocss' | 'tachyons')[];
+}
+
+/**
+ * User config file schema (.classmcp.json)
+ */
+export interface UserConfig {
+  /** Custom patterns to add */
+  customPatterns?: CustomPatternInput[];
+
+  /** If true, custom patterns override built-ins with same id */
+  overrideBuiltins?: boolean;
+
+  /** Default framework (can be overridden at runtime) */
+  defaultFramework?: 'tailwind' | 'bootstrap' | 'unocss' | 'tachyons';
+}

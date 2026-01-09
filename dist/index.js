@@ -10,10 +10,14 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema, ListResourcesRequestSchema, ReadResourceRequestSchema, } from "@modelcontextprotocol/sdk/types.js";
-import { frameworks, getPatterns, getPattern, getPatternsByCategory, searchPatterns, getCategories, resolveClasses, isSSRSafe, getSSRWarning, generateCSS, listFrameworks, getFrameworkStats, } from "./frameworks/index.js";
+import { frameworks, getPatterns, getPattern, getPatternsByCategory, searchPatterns, getCategories, resolveClasses, isSSRSafe, getSSRWarning, generateCSS, listFrameworks, getFrameworkStats, setCustomPatterns, getCustomPatterns, clearCustomPatterns, } from "./frameworks/index.js";
 import { createMinificationMap, minifyClass, generateMinifiedCSS, calculateSavings, } from "./core/minifier.js";
+import { loadConfig, reloadConfig, transformPatternsWithMeta, } from "./config/index.js";
 // Default framework - can be changed via configuration
 let currentFramework = 'tailwind';
+// Store config state for reload functionality
+let currentConfigPath = null;
+let projectPath = process.cwd();
 const server = new Server({
     name: "classmcp",
     version: "2.0.0",
@@ -164,6 +168,28 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                 inputSchema: {
                     type: "object",
                     properties: {},
+                },
+            },
+            {
+                name: "reload_config",
+                description: "Reload custom patterns from the config file (.classmcp.json). Use this after modifying your config file.",
+                inputSchema: {
+                    type: "object",
+                    properties: {},
+                },
+            },
+            {
+                name: "list_custom_patterns",
+                description: "List all custom (user-defined) patterns loaded from your config file.",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        framework: {
+                            type: "string",
+                            description: "Filter by framework (optional, defaults to current framework)",
+                            enum: frameworkEnum,
+                        },
+                    },
                 },
             },
         ],
@@ -612,6 +638,128 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 content: [{ type: "text", text: output }],
             };
         }
+        // ============================================
+        // RELOAD CONFIG
+        // ============================================
+        case "reload_config": {
+            try {
+                const result = await reloadConfig(currentConfigPath, projectPath);
+                currentConfigPath = result.configPath;
+                if (!result.found) {
+                    clearCustomPatterns();
+                    return {
+                        content: [
+                            {
+                                type: "text",
+                                text: `No config file found. Create a \`.classmcp.json\` file to add custom patterns.\n\n` +
+                                    `Example config:\n\`\`\`json\n{\n  "customPatterns": [\n    { "id": "brand-btn", "classes": "px-4 py-2 bg-brand-600 text-white rounded-lg" }\n  ]\n}\n\`\`\``,
+                            },
+                        ],
+                    };
+                }
+                if (!result.validation.valid) {
+                    return {
+                        content: [
+                            {
+                                type: "text",
+                                text: `**Config validation errors:**\n\n${result.validation.errors.map(e => `- ${e.path}: ${e.message}`).join('\n')}\n\n` +
+                                    `Config file: ${result.configPath}\n\nFix the errors and run \`reload_config\` again.`,
+                            },
+                        ],
+                    };
+                }
+                // Apply custom patterns
+                const customPatterns = result.config.customPatterns || [];
+                const transformed = transformPatternsWithMeta(customPatterns);
+                setCustomPatterns(transformed, result.config.overrideBuiltins ?? false);
+                // Update default framework if specified
+                if (result.config.defaultFramework) {
+                    currentFramework = result.config.defaultFramework;
+                }
+                let output = `**Config reloaded successfully!**\n\n`;
+                output += `- Config file: \`${result.configPath}\`\n`;
+                output += `- Custom patterns loaded: ${transformed.length}\n`;
+                output += `- Override built-ins: ${result.config.overrideBuiltins ?? false}\n`;
+                if (result.validation.warnings.length > 0) {
+                    output += `\n**Warnings:**\n${result.validation.warnings.map(w => `- ${w}`).join('\n')}`;
+                }
+                if (transformed.length > 0) {
+                    output += `\n\n**Custom patterns:**\n`;
+                    for (const p of transformed.slice(0, 10)) {
+                        output += `- \`${p.id}\`: ${p.description}\n`;
+                    }
+                    if (transformed.length > 10) {
+                        output += `- ... and ${transformed.length - 10} more\n`;
+                    }
+                }
+                return {
+                    content: [{ type: "text", text: output }],
+                };
+            }
+            catch (error) {
+                return {
+                    content: [
+                        {
+                            type: "text",
+                            text: `Error reloading config: ${error instanceof Error ? error.message : String(error)}`,
+                        },
+                    ],
+                };
+            }
+        }
+        // ============================================
+        // LIST CUSTOM PATTERNS
+        // ============================================
+        case "list_custom_patterns": {
+            const framework = args?.framework || currentFramework;
+            const customPatterns = getCustomPatterns();
+            if (customPatterns.length === 0) {
+                return {
+                    content: [
+                        {
+                            type: "text",
+                            text: `No custom patterns loaded.\n\nTo add custom patterns, create a \`.classmcp.json\` file:\n\n\`\`\`json\n{\n  "customPatterns": [\n    { "id": "brand-btn", "classes": "px-4 py-2 bg-brand-600 text-white rounded-lg" }\n  ]\n}\n\`\`\`\n\nThen use \`reload_config\` to load them.`,
+                        },
+                    ],
+                };
+            }
+            // Filter for current framework
+            const filtered = customPatterns.filter(p => {
+                if (!p._frameworks || p._frameworks.length === 0)
+                    return true;
+                return p._frameworks.includes(framework);
+            });
+            let output = `# Custom Patterns\n\n`;
+            output += `Total: ${customPatterns.length} custom patterns (${filtered.length} for ${framework})\n\n`;
+            if (filtered.length === 0) {
+                output += `No custom patterns are configured for ${framework}.\n`;
+            }
+            else {
+                // Group by category
+                const grouped = new Map();
+                for (const p of filtered) {
+                    const cat = p.category;
+                    if (!grouped.has(cat))
+                        grouped.set(cat, []);
+                    grouped.get(cat).push(p);
+                }
+                for (const [category, patterns] of grouped) {
+                    output += `## ${category}\n`;
+                    for (const p of patterns) {
+                        const classes = typeof p.classes === 'string' ? p.classes : p.classes.base;
+                        const truncated = classes.length > 60 ? classes.slice(0, 60) + '...' : classes;
+                        output += `- **${p.id}**: \`${truncated}\`\n`;
+                    }
+                    output += '\n';
+                }
+            }
+            if (currentConfigPath) {
+                output += `\n_Config file: ${currentConfigPath}_`;
+            }
+            return {
+                content: [{ type: "text", text: output }],
+            };
+        }
         default:
             return {
                 content: [
@@ -737,10 +885,39 @@ Use \`set_framework\` to change frameworks.
 // START SERVER
 // ============================================
 async function main() {
+    // Load config from project directory
+    projectPath = process.cwd();
+    try {
+        const configResult = await loadConfig(projectPath);
+        currentConfigPath = configResult.configPath;
+        if (configResult.found && configResult.validation.valid) {
+            // Apply custom patterns
+            const customPatterns = configResult.config.customPatterns || [];
+            if (customPatterns.length > 0) {
+                const transformed = transformPatternsWithMeta(customPatterns);
+                setCustomPatterns(transformed, configResult.config.overrideBuiltins ?? false);
+                console.error(`[classmcp] Loaded ${transformed.length} custom patterns from ${configResult.configPath}`);
+            }
+            // Apply default framework if specified
+            if (configResult.config.defaultFramework) {
+                currentFramework = configResult.config.defaultFramework;
+            }
+        }
+        else if (configResult.found && !configResult.validation.valid) {
+            console.error(`[classmcp] Config validation failed - using defaults`);
+        }
+    }
+    catch (error) {
+        console.error(`[classmcp] Error loading config: ${error instanceof Error ? error.message : String(error)}`);
+    }
     const transport = new StdioServerTransport();
     await server.connect(transport);
     console.error("classmcp v2.0.0 - Multi-framework CSS class server running on stdio");
     console.error(`Default framework: ${frameworks[currentFramework].config.displayName}`);
+    const stats = getFrameworkStats(currentFramework);
+    if (stats.customPatterns > 0) {
+        console.error(`Custom patterns: ${stats.customPatterns}`);
+    }
 }
 main().catch(console.error);
 //# sourceMappingURL=index.js.map

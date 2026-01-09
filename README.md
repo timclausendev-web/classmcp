@@ -99,6 +99,65 @@ get_class: { name: "btn-primary", minified: true }
 → Class: "a" (saves 11 chars per usage)
 ```
 
+### Custom Patterns
+
+Define your own semantic class names by creating a `.classmcp.json` file in your project root:
+
+**Simple format:**
+```json
+{
+  "customPatterns": [
+    { "id": "brand-btn", "classes": "px-4 py-2 bg-brand-600 text-white rounded-lg font-semibold" },
+    { "id": "pricing-card", "classes": "p-8 border-2 border-gray-100 rounded-2xl shadow-xl" }
+  ]
+}
+```
+
+**With states and metadata:**
+```json
+{
+  "customPatterns": [
+    {
+      "id": "brand-btn",
+      "category": "buttons",
+      "description": "Brand-colored primary button",
+      "classes": {
+        "base": "px-4 py-2 bg-brand-600 text-white rounded-lg font-semibold",
+        "hover": "hover:bg-brand-700 hover:shadow-md",
+        "focus": "focus:ring-2 focus:ring-brand-300"
+      }
+    }
+  ],
+  "overrideBuiltins": false,
+  "defaultFramework": "tailwind"
+}
+```
+
+**Config options:**
+| Option | Description |
+|--------|-------------|
+| `customPatterns` | Array of custom pattern definitions |
+| `overrideBuiltins` | If `true`, custom patterns replace built-ins with same ID |
+| `defaultFramework` | Default framework to use (tailwind, bootstrap, unocss, tachyons) |
+
+**Pattern options:**
+| Field | Required | Description |
+|-------|----------|-------------|
+| `id` | Yes | Unique identifier (e.g., "brand-btn") |
+| `classes` | Yes | CSS classes (string or state object with base/hover/focus/active/disabled) |
+| `category` | No | Category for organization (defaults to "custom") |
+| `name` | No | Human-readable name (defaults to id) |
+| `description` | No | Description of when to use |
+| `frameworks` | No | Limit to specific frameworks (e.g., ["tailwind"]) |
+| `ssr.safe` | No | Whether pattern is SSR-safe |
+
+**Alternative config locations:**
+- `.classmcp.json` (recommended)
+- `classmcp.config.json`
+- `package.json` under `"classmcp"` key
+
+After modifying your config, use the `reload_config` tool to apply changes without restarting.
+
 ## Available Tools
 
 | Tool | Description |
@@ -111,6 +170,8 @@ get_class: { name: "btn-primary", minified: true }
 | `get_component` | Get complete HTML component examples |
 | `get_ssr_info` | Check SSR/hydration safety for a pattern |
 | `list_frameworks` | List all available frameworks with statistics |
+| `reload_config` | Reload custom patterns from config file |
+| `list_custom_patterns` | List all user-defined custom patterns |
 
 ## Class Categories
 

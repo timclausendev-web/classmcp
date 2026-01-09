@@ -1,0 +1,32 @@
+{
+  "customPatterns": [
+    {
+      "id": "brand-btn",
+      "category": "buttons",
+      "description": "Brand-colored primary button with custom styling",
+      "classes": {
+        "base": "px-4 py-2 bg-brand-600 text-white rounded-lg font-semibold transition-all",
+        "hover": "hover:bg-brand-700 hover:shadow-lg",
+        "focus": "focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+      }
+    },
+    {
+      "id": "pricing-card",
+      "category": "cards",
+      "classes": "p-8 border-2 border-gray-100 rounded-2xl shadow-xl bg-white"
+    },
+    {
+      "id": "hero-gradient",
+      "category": "backgrounds",
+      "classes": "bg-gradient-to-br from-brand-500 via-purple-500 to-pink-500"
+    },
+    {
+      "id": "dashboard-sidebar",
+      "category": "layout",
+      "classes": "w-64 h-screen bg-gray-900 text-white flex flex-col",
+      "frameworks": ["tailwind", "unocss"]
+    }
+  ],
+  "overrideBuiltins": false,
+  "defaultFramework": "tailwind"
+}

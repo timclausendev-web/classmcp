@@ -14,6 +14,44 @@ export const frameworks = {
     tachyons: { config: tachyonsConfig, patterns: tachyonsPatterns }
 };
 // ============================================
+// CUSTOM PATTERNS STORAGE
+// ============================================
+/** Storage for user-defined custom patterns */
+let customPatterns = [];
+/** Whether custom patterns should override built-ins with same ID */
+let overrideBuiltins = false;
+/**
+ * Set custom patterns from user config
+ */
+export function setCustomPatterns(patterns, override = false) {
+    customPatterns = patterns;
+    overrideBuiltins = override;
+}
+/**
+ * Get all custom patterns (unfiltered)
+ */
+export function getCustomPatterns() {
+    return customPatterns;
+}
+/**
+ * Get custom patterns filtered for a specific framework
+ */
+export function getCustomPatternsForFramework(frameworkId) {
+    return customPatterns.filter(p => {
+        if (!p._frameworks || p._frameworks.length === 0) {
+            return true; // No framework restriction = applies to all
+        }
+        return p._frameworks.includes(frameworkId);
+    });
+}
+/**
+ * Clear all custom patterns
+ */
+export function clearCustomPatterns() {
+    customPatterns = [];
+    overrideBuiltins = false;
+}
+// ============================================
 // FRAMEWORK DETECTION
 // ============================================
 /**
@@ -42,37 +80,58 @@ export async function detectFramework(projectPath) {
 // PATTERN UTILITIES
 // ============================================
 /**
- * Get all patterns for a framework
+ * Get all patterns for a framework (built-in + custom)
  */
 export function getPatterns(frameworkId) {
-    return frameworks[frameworkId]?.patterns || [];
+    const builtIn = frameworks[frameworkId]?.patterns || [];
+    const custom = getCustomPatternsForFramework(frameworkId);
+    if (overrideBuiltins) {
+        // Custom patterns override built-ins with same ID
+        const customIds = new Set(custom.map(p => p.id));
+        const filteredBuiltIn = builtIn.filter(p => !customIds.has(p.id));
+        return [...filteredBuiltIn, ...custom];
+    }
+    // Custom patterns extend built-ins (no override)
+    return [...builtIn, ...custom];
 }
 /**
- * Get a pattern by ID
+ * Get a pattern by ID (checks custom first if overrideBuiltins, else built-in first)
  */
 export function getPattern(frameworkId, patternId) {
-    return frameworks[frameworkId]?.patterns.find(p => p.id === patternId);
+    const builtIn = frameworks[frameworkId]?.patterns.find(p => p.id === patternId);
+    const custom = getCustomPatternsForFramework(frameworkId).find(p => p.id === patternId);
+    if (overrideBuiltins) {
+        return custom ?? builtIn; // Custom wins
+    }
+    return builtIn ?? custom; // Built-in wins, custom extends
 }
 /**
- * Get patterns by category
+ * Check if a pattern is custom (user-defined)
+ */
+export function isCustomPattern(pattern) {
+    return '_isCustom' in pattern && pattern._isCustom === true;
+}
+/**
+ * Get patterns by category (built-in + custom)
  */
 export function getPatternsByCategory(frameworkId, category) {
-    return frameworks[frameworkId]?.patterns.filter(p => p.category === category) || [];
+    return getPatterns(frameworkId).filter(p => p.category === category);
 }
 /**
- * Search patterns by query
+ * Search patterns by query (built-in + custom)
  */
 export function searchPatterns(frameworkId, query) {
     const q = query.toLowerCase();
-    return frameworks[frameworkId]?.patterns.filter(p => p.name.toLowerCase().includes(q) ||
+    return getPatterns(frameworkId).filter(p => p.name.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)) || [];
+        p.category.toLowerCase().includes(q) ||
+        p.id.toLowerCase().includes(q));
 }
 /**
- * Get all categories for a framework
+ * Get all categories for a framework (built-in + custom)
  */
 export function getCategories(frameworkId) {
-    const patterns = frameworks[frameworkId]?.patterns || [];
+    const patterns = getPatterns(frameworkId);
     return [...new Set(patterns.map(p => p.category))];
 }
 // ============================================
@@ -134,7 +193,7 @@ export function getClientOnlyClasses(pattern) {
 // CSS GENERATION
 // ============================================
 /**
- * Generate CSS for patterns
+ * Generate CSS for patterns (built-in + custom)
  */
 export function generateCSS(frameworkId, options = {}) {
     const { categories, includeStates = true, minified = false } = options;
@@ -142,12 +201,13 @@ export function generateCSS(frameworkId, options = {}) {
     if (!framework) {
         throw new Error(`Unknown framework: ${frameworkId}`);
     }
-    let patterns = framework.patterns;
+    // Use getPatterns() to include custom patterns
+    let patterns = getPatterns(frameworkId);
     if (categories?.length) {
         patterns = patterns.filter(p => categories.includes(p.category));
     }
     let css = `/* Generated by classmcp - ${framework.config.displayName} */\n`;
-    css += `/* https://classmcp.com */\n\n`;
+    css += `/* https://github.com/anthropics/classmcp */\n\n`;
     // Group by category
     const grouped = new Map();
     for (const p of patterns) {
@@ -158,7 +218,8 @@ export function generateCSS(frameworkId, options = {}) {
     }
     for (const [category, pats] of grouped) {
         if (!minified) {
-            css += `/* ${category.toUpperCase()} */\n`;
+            const isCustomCategory = category === 'custom' || pats.some(p => isCustomPattern(p));
+            css += `/* ${category.toUpperCase()}${isCustomCategory ? ' (includes custom)' : ''} */\n`;
         }
         for (const p of pats) {
             const classes = resolveClasses(p, { includeStates });
@@ -196,15 +257,19 @@ export function listFrameworks() {
     }));
 }
 /**
- * Get framework statistics
+ * Get framework statistics (includes custom patterns)
  */
 export function getFrameworkStats(frameworkId) {
-    const patterns = frameworks[frameworkId]?.patterns || [];
+    const allPatterns = getPatterns(frameworkId);
+    const builtIn = frameworks[frameworkId]?.patterns || [];
+    const custom = getCustomPatternsForFramework(frameworkId);
     return {
-        totalPatterns: patterns.length,
-        categories: new Set(patterns.map(p => p.category)).size,
-        ssrSafePatterns: patterns.filter(p => isSSRSafe(p)).length,
-        clientOnlyPatterns: patterns.filter(p => !isSSRSafe(p)).length
+        totalPatterns: allPatterns.length,
+        builtInPatterns: builtIn.length,
+        customPatterns: custom.length,
+        categories: new Set(allPatterns.map(p => p.category)).size,
+        ssrSafePatterns: allPatterns.filter(p => isSSRSafe(p)).length,
+        clientOnlyPatterns: allPatterns.filter(p => !isSSRSafe(p)).length
     };
 }
 // Re-export everything
