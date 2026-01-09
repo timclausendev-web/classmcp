@@ -39,11 +39,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/timclausen/classmcp.git"
+    "url": "git+https://github.com/timclausendev-web/classmcp.git"
   },
-  "homepage": "https://github.com/timclausen/classmcp#readme",
+  "homepage": "https://github.com/timclausendev-web/classmcp#readme",
   "bugs": {
-    "url": "https://github.com/timclausen/classmcp/issues"
+    "url": "https://github.com/timclausendev-web/classmcp/issues"
   },
   "engines": {
     "node": ">=18.0.0"
