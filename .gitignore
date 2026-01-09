@@ -63,7 +63,7 @@ test-site/
 
 # Internal marketing/tracking (not for public repo)
 .claude/
-REDDIT_POSTS.csv
+docs/
 reddit-posts/
 reddit-performance/
 ARGUMENTS.md
