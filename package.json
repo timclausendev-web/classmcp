@@ -1,6 +1,6 @@
 {
   "name": "classmcp",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "MCP server providing semantic CSS patterns optimized for AI code generation - supports Tailwind, Bootstrap, UnoCSS, Tachyons with 77% token savings",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
