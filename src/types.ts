@@ -312,6 +312,11 @@ export const CATEGORIES = [
   { id: 'lists', name: 'Lists', description: 'List containers and items' },
   { id: 'loading', name: 'Loading', description: 'Spinners and skeletons' },
   { id: 'dividers', name: 'Dividers', description: 'Separators and dividers' },
+  { id: 'backgrounds', name: 'Backgrounds', description: 'Gradients, glass effects, and fancy backgrounds' },
+  { id: 'icons', name: 'Icons', description: 'Icon containers and sizing' },
+  { id: 'code', name: 'Code', description: 'Code blocks and syntax highlighting' },
+  { id: 'pricing', name: 'Pricing', description: 'Pricing cards and badges' },
+  { id: 'fonts', name: 'Fonts', description: 'Font families, weights, and typography styles' },
 ] as const;
 
 export type CategoryId = typeof CATEGORIES[number]['id'];

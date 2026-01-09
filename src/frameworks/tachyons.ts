@@ -806,6 +806,114 @@ export const tachyonsPatterns: ComponentPattern[] = [
     classes: 'bt bw2 b--black-10',
     ssr: { safe: true }
   },
+
+  // ============================================
+  // BACKGROUNDS
+  // ============================================
+  {
+    id: 'bg-primary',
+    name: 'bg-primary',
+    description: 'Primary blue background',
+    category: 'backgrounds',
+    classes: 'bg-blue white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-dark',
+    name: 'bg-dark',
+    description: 'Dark background',
+    category: 'backgrounds',
+    classes: 'bg-dark-gray white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-light',
+    name: 'bg-light',
+    description: 'Light background',
+    category: 'backgrounds',
+    classes: 'bg-near-white dark-gray',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-success',
+    name: 'bg-success',
+    description: 'Success green background',
+    category: 'backgrounds',
+    classes: 'bg-green white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-danger',
+    name: 'bg-danger',
+    description: 'Danger red background',
+    category: 'backgrounds',
+    classes: 'bg-red white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-warning',
+    name: 'bg-warning',
+    description: 'Warning yellow background',
+    category: 'backgrounds',
+    classes: 'bg-gold dark-gray',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-purple',
+    name: 'bg-purple',
+    description: 'Purple background',
+    category: 'backgrounds',
+    classes: 'bg-purple white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-navy',
+    name: 'bg-navy',
+    description: 'Navy background',
+    category: 'backgrounds',
+    classes: 'bg-navy white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-transparent',
+    name: 'bg-transparent',
+    description: 'Transparent background',
+    category: 'backgrounds',
+    classes: 'bg-transparent',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-washed-blue',
+    name: 'bg-washed-blue',
+    description: 'Washed blue background',
+    category: 'backgrounds',
+    classes: 'bg-washed-blue dark-blue',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-washed-green',
+    name: 'bg-washed-green',
+    description: 'Washed green background',
+    category: 'backgrounds',
+    classes: 'bg-washed-green dark-green',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-washed-yellow',
+    name: 'bg-washed-yellow',
+    description: 'Washed yellow background',
+    category: 'backgrounds',
+    classes: 'bg-washed-yellow dark-gray',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-washed-red',
+    name: 'bg-washed-red',
+    description: 'Washed red background',
+    category: 'backgrounds',
+    classes: 'bg-washed-red dark-red',
+    ssr: { safe: true }
+  },
 ];
 
 export default {

@@ -1,8 +1,9 @@
 {
   "name": "classmcp",
   "version": "2.0.0",
-  "description": "Multi-framework MCP server for AI-optimized CSS class generation with SSR safety - supports Tailwind, Bootstrap, UnoCSS, Tachyons",
+  "description": "MCP server providing semantic CSS patterns optimized for AI code generation - supports Tailwind, Bootstrap, UnoCSS, Tachyons with 77% token savings",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "classmcp": "./dist/index.js"
   },
@@ -11,24 +12,47 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "mcp",
+    "model-context-protocol",
     "tailwind",
+    "tailwindcss",
     "bootstrap",
     "unocss",
     "tachyons",
     "css",
+    "semantic-css",
     "ai",
     "claude",
+    "chatgpt",
+    "llm",
     "ssr",
     "hydration",
-    "classpresso",
-    "utility-css"
+    "token-optimization",
+    "utility-css",
+    "code-generation"
   ],
   "author": "Tim Carter Clausen <tim.clausen.dev@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timclausen/classmcp.git"
+  },
+  "homepage": "https://github.com/timclausen/classmcp#readme",
+  "bugs": {
+    "url": "https://github.com/timclausen/classmcp/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.5.0"
   },

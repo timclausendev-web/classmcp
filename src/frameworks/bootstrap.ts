@@ -794,6 +794,122 @@ export const bootstrapPatterns: ComponentPattern[] = [
     classes: 'placeholder-glow',
     ssr: { safe: true }
   },
+
+  // ============================================
+  // BACKGROUNDS & GRADIENTS
+  // ============================================
+  {
+    id: 'bg-gradient-primary',
+    name: 'bg-gradient-primary',
+    description: 'Primary gradient background',
+    category: 'backgrounds',
+    classes: 'bg-primary bg-gradient text-white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-secondary',
+    name: 'bg-gradient-secondary',
+    description: 'Secondary gradient background',
+    category: 'backgrounds',
+    classes: 'bg-secondary bg-gradient text-white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-success',
+    name: 'bg-gradient-success',
+    description: 'Success gradient background',
+    category: 'backgrounds',
+    classes: 'bg-success bg-gradient text-white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-danger',
+    name: 'bg-gradient-danger',
+    description: 'Danger gradient background',
+    category: 'backgrounds',
+    classes: 'bg-danger bg-gradient text-white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-warning',
+    name: 'bg-gradient-warning',
+    description: 'Warning gradient background',
+    category: 'backgrounds',
+    classes: 'bg-warning bg-gradient text-dark',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-info',
+    name: 'bg-gradient-info',
+    description: 'Info gradient background',
+    category: 'backgrounds',
+    classes: 'bg-info bg-gradient text-white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-dark',
+    name: 'bg-gradient-dark',
+    description: 'Dark gradient background',
+    category: 'backgrounds',
+    classes: 'bg-dark bg-gradient text-white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-light-subtle',
+    name: 'bg-light-subtle',
+    description: 'Subtle light background',
+    category: 'backgrounds',
+    classes: 'bg-light-subtle',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-dark-subtle',
+    name: 'bg-dark-subtle',
+    description: 'Subtle dark background',
+    category: 'backgrounds',
+    classes: 'bg-dark-subtle',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-body-tertiary',
+    name: 'bg-body-tertiary',
+    description: 'Tertiary body background',
+    category: 'backgrounds',
+    classes: 'bg-body-tertiary',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-opacity-75',
+    name: 'bg-opacity-75',
+    description: 'Semi-transparent background',
+    category: 'backgrounds',
+    classes: 'bg-primary bg-opacity-75 text-white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-opacity-50',
+    name: 'bg-opacity-50',
+    description: 'Half-transparent background',
+    category: 'backgrounds',
+    classes: 'bg-primary bg-opacity-50 text-white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-opacity-25',
+    name: 'bg-opacity-25',
+    description: 'Light transparent background',
+    category: 'backgrounds',
+    classes: 'bg-primary bg-opacity-25',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-transparent',
+    name: 'bg-transparent',
+    description: 'Transparent background',
+    category: 'backgrounds',
+    classes: 'bg-transparent',
+    ssr: { safe: true }
+  },
 ];
 
 export default {

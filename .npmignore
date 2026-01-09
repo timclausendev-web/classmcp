@@ -1,0 +1,46 @@
+# Source files (dist is published)
+src/
+tsconfig.json
+
+# Development files
+.git/
+.gitignore
+.github/
+
+# Documentation (keep README)
+AI-INSTRUCTIONS.md
+CLAUDE.md
+TOKEN-SAVINGS-REPORT.md
+
+# Test and demo
+test-site/
+demo-site/
+coverage/
+*.test.ts
+*.spec.ts
+
+# IDE and OS
+.vscode/
+.idea/
+*.code-workspace
+.DS_Store
+Thumbs.db
+
+# Environment and credentials
+.env
+.env.*
+*.env
+credentials.json
+secrets.json
+.npmrc
+
+# Logs and temp
+*.log
+*.tmp
+.cache/
+
+# Playwright
+.playwright-mcp/
+
+# MCP config
+.mcp.json

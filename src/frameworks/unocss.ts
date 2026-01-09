@@ -803,6 +803,170 @@ export const unocssPatterns: ComponentPattern[] = [
     },
     ssr: { safe: true }
   },
+
+  // ============================================
+  // BACKGROUNDS & GRADIENTS
+  // ============================================
+  {
+    id: 'bg-gradient-blue',
+    name: 'bg-gradient-blue',
+    description: 'Blue to indigo gradient',
+    category: 'backgrounds',
+    classes: 'bg-gradient-to-r from-blue-500 to-indigo-600',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-purple',
+    name: 'bg-gradient-purple',
+    description: 'Purple to pink gradient',
+    category: 'backgrounds',
+    classes: 'bg-gradient-to-r from-purple-500 to-pink-500',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-sunset',
+    name: 'bg-gradient-sunset',
+    description: 'Sunset gradient',
+    category: 'backgrounds',
+    classes: 'bg-gradient-to-r from-orange-400 via-red-500 to-pink-500',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-ocean',
+    name: 'bg-gradient-ocean',
+    description: 'Ocean gradient',
+    category: 'backgrounds',
+    classes: 'bg-gradient-to-r from-cyan-500 to-blue-500',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-forest',
+    name: 'bg-gradient-forest',
+    description: 'Forest gradient',
+    category: 'backgrounds',
+    classes: 'bg-gradient-to-r from-green-400 to-cyan-500',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-fire',
+    name: 'bg-gradient-fire',
+    description: 'Fire gradient',
+    category: 'backgrounds',
+    classes: 'bg-gradient-to-r from-red-500 via-orange-500 to-yellow-400',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-midnight',
+    name: 'bg-gradient-midnight',
+    description: 'Midnight gradient',
+    category: 'backgrounds',
+    classes: 'bg-gradient-to-r from-gray-900 via-purple-900 to-violet-600',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-gradient-diagonal',
+    name: 'bg-gradient-diagonal',
+    description: 'Diagonal gradient',
+    category: 'backgrounds',
+    classes: 'bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500',
+    ssr: { safe: true }
+  },
+  {
+    id: 'glass',
+    name: 'glass',
+    description: 'Glass effect with blur',
+    category: 'backgrounds',
+    classes: 'bg-white/30 backdrop-blur-lg border border-white/20',
+    ssr: { safe: true }
+  },
+  {
+    id: 'glass-dark',
+    name: 'glass-dark',
+    description: 'Dark glass effect',
+    category: 'backgrounds',
+    classes: 'bg-gray-900/50 backdrop-blur-lg border border-gray-700/50',
+    ssr: { safe: true }
+  },
+  {
+    id: 'glass-card',
+    name: 'glass-card',
+    description: 'Glass card effect',
+    category: 'backgrounds',
+    classes: 'bg-white/20 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-primary',
+    name: 'bg-primary',
+    description: 'Primary background',
+    category: 'backgrounds',
+    classes: 'bg-blue-600 text-white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-dark',
+    name: 'bg-dark',
+    description: 'Dark background',
+    category: 'backgrounds',
+    classes: 'bg-gray-900 text-white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'bg-secondary',
+    name: 'bg-secondary',
+    description: 'Secondary background',
+    category: 'backgrounds',
+    classes: 'bg-gray-100 text-gray-900',
+    ssr: { safe: true }
+  },
+  {
+    id: 'hero-gradient',
+    name: 'hero-gradient',
+    description: 'Hero gradient background',
+    category: 'backgrounds',
+    classes: 'bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white',
+    ssr: { safe: true }
+  },
+  {
+    id: 'text-gradient',
+    name: 'text-gradient',
+    description: 'Gradient text',
+    category: 'backgrounds',
+    classes: 'text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600',
+    ssr: { safe: true }
+  },
+  {
+    id: 'glow-blue',
+    name: 'glow-blue',
+    description: 'Blue glow effect',
+    category: 'backgrounds',
+    classes: 'shadow-lg shadow-blue-500/50',
+    ssr: { safe: true }
+  },
+  {
+    id: 'glow-purple',
+    name: 'glow-purple',
+    description: 'Purple glow effect',
+    category: 'backgrounds',
+    classes: 'shadow-lg shadow-purple-500/50',
+    ssr: { safe: true }
+  },
+  {
+    id: 'overlay-dark',
+    name: 'overlay-dark',
+    description: 'Dark overlay',
+    category: 'backgrounds',
+    classes: 'bg-black/60',
+    ssr: { safe: true }
+  },
+  {
+    id: 'overlay-gradient',
+    name: 'overlay-gradient',
+    description: 'Gradient overlay',
+    category: 'backgrounds',
+    classes: 'bg-gradient-to-t from-black/80 via-black/40 to-transparent',
+    ssr: { safe: true }
+  },
 ];
 
 export default {

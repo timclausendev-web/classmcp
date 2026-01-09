@@ -221,10 +221,10 @@ export function generateCSS(
       const classes = resolveClasses(p, { includeStates });
 
       if (framework.config.customClassSyntax === '@apply') {
-        css += `.${p.name} { @apply ${classes}; }\n`;
+        css += `.${p.id} { @apply ${classes}; }\n`;
       } else {
         // Raw CSS - would need actual CSS values
-        css += `.${p.name} { /* ${classes} */ }\n`;
+        css += `.${p.id} { /* ${classes} */ }\n`;
       }
     }
 
